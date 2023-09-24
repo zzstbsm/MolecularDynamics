@@ -1,0 +1,14 @@
+# To initialize a new project in the current directory
+cargo init
+
+# To initialize a new project in a new folder
+cargo run $folder_name$
+
+# To build a debug version
+cargo build
+
+# To build a release version
+cargo build --release
+
+# To compile as debug version and run the project
+cargo run
