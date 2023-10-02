@@ -1,9 +1,9 @@
 use serde::{Serialize, Deserialize};
 
-use crate::data_structure::trivector;
 use crate::data_structure::trivector::Trivector;
 use crate::physics::atom::Atom;
 use super::atom;
+use super::lattice;
 
 #[derive(Serialize, Deserialize)]
 pub struct Ensemble {
@@ -40,13 +40,8 @@ impl Ensemble {
         target_temperature: f64
     ) -> Ensemble {
 
-        const ATOMS_PER_CELL: u64 = 4;
-
-        let mut inserted_atoms: u64 = 0;            
-        let atoms_per_row = (number_of_atoms as f64 / ATOMS_PER_CELL as f64).cbrt().ceil() as u64;
         let mut atoms: Vec<Atom> = Vec::<Atom>::with_capacity(number_of_atoms as usize);
-
-        let (mut x, mut y, mut z) = (0_u64, 0_u64, 0_u64);
+        let lattice_type: lattice::LatticeType = lattice::LatticeType::FCC;
 
         if number_of_atoms == 2_u64 {
             return initialization_two_atoms(
@@ -58,67 +53,12 @@ impl Ensemble {
             );
         }
 
-        let mut inserted_in_grid = 1;
-
-        while inserted_atoms < number_of_atoms {
-
-            if inserted_in_grid > ATOMS_PER_CELL { 
-                inserted_in_grid = 1;
-                x += 1;
-            }
-            
-            let offset: Trivector = match inserted_in_grid {
-                1 => Trivector {
-                    x: 0.,
-                    y: 0.,
-                    z: 0.,
-                },
-                2 => Trivector {
-                    x: 0.5,
-                    y: 0.5,
-                    z: 0.,
-                },
-                3 => Trivector {
-                    x: 0.,
-                    y: 0.5,
-                    z: 0.5,
-                },
-                4 => Trivector {
-                    x: 0.5,
-                    y: 0.,
-                    z: 0.5,
-                },
-                _ => Trivector { x: 0., y: 0., z: 0. }
-     
-            };
-            
-            if x >= atoms_per_row && y < atoms_per_row {
-                x = 0_u64;
-                y += 1_u64;
-            } 
-            if y >= atoms_per_row  && z < atoms_per_row {
-                y = 0_u64;
-                z += 1_u64;
-            };
-
-            let position: Trivector = Trivector {
-                x: x as f64 + offset.x,
-                y: y as f64 + offset.y,
-                z: z as f64 + offset.z,
-            }.times_scalar(box_length)
-            .divided_scalar(atoms_per_row as f64);
-            let velocity = trivector::random_initialization();
-
-            atoms.push(
-                Atom {
-                    position,
-                    velocity,
-                }
-            );
-
-            inserted_atoms += 1;
-            inserted_in_grid += 1;
-        }
+        lattice::lattice_create(
+            &mut atoms,
+            &number_of_atoms,
+            &box_length,
+            lattice_type,
+        );
 
         Ensemble {
             atoms,
@@ -159,6 +99,7 @@ impl Ensemble {
 
         return to_csv_str;
     }
+
 }
 
 fn initialization_two_atoms(
@@ -180,7 +121,7 @@ fn initialization_two_atoms(
         x: 0.25,
         y: 0.,
         z: 0.,
-    }.times_scalar(box_length);
+    } * box_length;
 
     let velocity_2 = Trivector {
         x: -0.5,
@@ -191,7 +132,7 @@ fn initialization_two_atoms(
         x: 0.75,
         y: 0.,
         z: 0.,
-    }.times_scalar(box_length);
+    } * box_length;
 
     atoms.push(
         Atom { 

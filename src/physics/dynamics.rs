@@ -38,13 +38,10 @@ fn compute_force(state: &Vec::<Atom>,box_length: f64) -> Vec::<Trivector> {
                 box_length,
             );
             
-            force[index_atom_1] = Trivector::sum(&force[index_atom_1], &force_one_atom);
-            force[index_atom_2] = Trivector::sub(&force[index_atom_2], &force_one_atom);
+            force[index_atom_1] += force_one_atom;
+            force[index_atom_2] += force_one_atom;
         }
     }
-
-    //println!("{:?}",force);
-
     return force;
 }
 
@@ -70,5 +67,5 @@ fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_lengt
         ) / f64::powf(distance,2_f64)
     );
 
-    return direction.times_scalar(multiply_factor);
+    return direction * multiply_factor;
 }

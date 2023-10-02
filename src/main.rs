@@ -1,8 +1,7 @@
-use crate::physics::integrator::Integrator;
-
 mod data_structure;
-mod physics;
+mod integrators;
 mod io;
+mod physics;
 
 fn main() {
 
@@ -17,10 +16,10 @@ fn main() {
 
     println!("Setting integrator");
 
-    let choose_integrator = Integrator::Verlet;
+    let choose_integrator = integrators::SupportedIntegrator::Verlet;
     let chosen_integrator = match choose_integrator {
-        Integrator::Verlet => physics::integrator::verlet,
-        Integrator::RungeKutta => physics::integrator::runge_kutta,
+        integrators::SupportedIntegrator::Verlet => integrators::verlet::verlet,
+        integrators::SupportedIntegrator::RungeKutta => integrators::runge_kutta::runge_kutta,
     };
 
     let _ = io::write(&ensemble);

@@ -1,6 +1,6 @@
-pub mod integrator;
-pub mod ensemble;
-pub mod dynamics;
 pub mod atom;
+pub mod dynamics;
+pub mod ensemble;
+mod lattice;
 
 pub use dynamics::dynamics;
