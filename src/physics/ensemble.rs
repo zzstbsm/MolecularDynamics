@@ -4,6 +4,7 @@ use crate::data_structure::trivector::Trivector;
 use crate::physics::atom::Atom;
 use super::atom;
 use super::lattice;
+use super::lattice::LatticeType;
 
 #[derive(Serialize, Deserialize)]
 pub struct Ensemble {
@@ -37,11 +38,11 @@ impl Ensemble {
         box_length: f64,
         t: f64,
         dt: f64,
-        target_temperature: f64
+        target_temperature: f64,
+        lattice_type: LatticeType,
     ) -> Ensemble {
 
         let mut atoms: Vec<Atom> = Vec::<Atom>::with_capacity(number_of_atoms as usize);
-        let lattice_type: lattice::LatticeType = lattice::LatticeType::FCC;
 
         if number_of_atoms == 2_u64 {
             return initialization_two_atoms(

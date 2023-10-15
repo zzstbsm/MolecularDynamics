@@ -1,6 +1,6 @@
 pub mod atom;
 pub mod dynamics;
 pub mod ensemble;
-mod lattice;
+pub mod lattice;
 
 pub use dynamics::dynamics;

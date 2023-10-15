@@ -3,6 +3,8 @@ mod integrators;
 mod io;
 mod physics;
 
+use physics::lattice as lattice;
+
 fn main() {
 
     let mut ensemble : physics::ensemble::Ensemble = physics::ensemble::Ensemble::new(
@@ -11,6 +13,7 @@ fn main() {
         0_f64,
         1e-3_f64,
         1_f64,
+        lattice::LatticeType::FCC,
     );
     println!("Ensemble initialized!");
 
