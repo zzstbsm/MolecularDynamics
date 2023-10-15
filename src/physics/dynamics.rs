@@ -47,11 +47,17 @@ fn compute_force(state: &Vec::<Atom>,box_length: f64) -> Vec::<Trivector> {
 
 static _SIGMA: f64 = 1_f64;
 static _EPSILON: f64 = 1_f64;
+static _CUTOFF: f64 = 1_f64;
 
 fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_length: f64) -> Trivector {
 
     let direction = Trivector::vec_distance(position_1, position_2,box_length);
     
+    // If the particle is outside the cutoff, return a zero force trivector
+    if distance_inside_cutoff(&direction) {
+        return Trivector::empty();
+    }
+
     let distance = Trivector::distance_from_vec_distance(&direction);
     let force_minimum_over_distance = _SIGMA / distance;
 
@@ -68,4 +74,10 @@ fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_lengt
     );
 
     return direction * multiply_factor;
+}
+
+fn distance_inside_cutoff(distance: &Trivector) -> bool {
+    return if distance.x < _CUTOFF && distance.x > -_CUTOFF &&
+        distance.x < _CUTOFF && distance.x > -_CUTOFF &&
+        distance.x < _CUTOFF && distance.z > -_CUTOFF { true } else { false };
 }
