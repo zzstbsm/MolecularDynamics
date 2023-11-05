@@ -1,3 +1,6 @@
+use std::fs::{create_dir,OpenOptions, File};
+use std::io::Write;
+
 use serde::{Serialize, Deserialize};
 
 use crate::data_structure::trivector::Trivector;
@@ -68,6 +71,34 @@ impl Ensemble {
             dt,
             target_temperature
         }
+    }
+
+    pub fn save(
+        &self,
+        directory: &std::path::PathBuf,
+    ) -> std::io::Result<()> {
+
+        let _ = create_dir("result");
+        let filename = "result/two.csv";
+    
+    
+            
+        let (mut file, exists) = match OpenOptions::new().read(true).open(&filename) {
+            Ok(_) => {
+                let file = OpenOptions::new().append(true).open(&filename).unwrap();
+                (file, true)
+            },
+            Err(_) => {
+                let file = File::create(&filename).unwrap();
+                (file,false)
+            },
+        };
+    
+        write!(
+            file,
+            "{}",
+            self.to_csv(!exists)
+        )
     }
 
     pub fn to_csv(&self,preamble: bool) -> String {

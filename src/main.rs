@@ -1,9 +1,37 @@
+mod cli;
 mod data_structure;
 mod integrators;
-mod io;
 mod physics;
 
-fn main() {
+use anyhow::{Context,Result};
+use clap::Parser;
+// use indicatif::ProgressBar;
+
+use cli::Cli;
+use physics::lattice as lattice;
+
+#[allow(unreachable_code,unused)]
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    let args = Cli::parse();
+
+    return Ok(());
+
+    let run_simulation_parameters = RunSimulationParameters {
+        t_max: 1_f64
+    };
+    run_simulation(
+        &args.destination_path,
+        run_simulation_parameters,
+    );
+
+}
+
+fn run_simulation(
+    save_directory: &std::path::PathBuf,
+    run_simulation_parameters: RunSimulationParameters,
+) {
+    
 
     let mut ensemble : physics::ensemble::Ensemble = physics::ensemble::Ensemble::new(
         256_u64, //200_u64,
@@ -22,11 +50,11 @@ fn main() {
         integrators::SupportedIntegrator::RungeKutta => integrators::runge_kutta::runge_kutta,
     };
 
-    let _ = io::write(&ensemble);
+    let _ = ensemble.save(save_directory);
     println!("Ensemble saved in file!");
 
     let mut counter = 0_u64;
-    while ensemble.t < 1e3 {
+    while ensemble.t < run_simulation_parameters.t_max {
 
         if counter > 1000 {
             counter = 0;
@@ -41,7 +69,7 @@ fn main() {
             );
 
             // TODO: remove this after debugged the force
-            let _ = io::write(&ensemble);
+            let _ = ensemble.save(save_directory);
         }
 
         chosen_integrator(
@@ -57,4 +85,8 @@ fn main() {
 
     }
     println!("Successful!");
+}
+
+struct RunSimulationParameters{
+    t_max: f64,
 }
