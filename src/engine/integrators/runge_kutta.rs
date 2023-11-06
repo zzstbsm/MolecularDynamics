@@ -1,5 +1,5 @@
-use crate::physics::atom;
-use crate::physics::atom::Atom;
+use super::super::physics::atom;
+use super::super::physics::atom::Atom;
 
 pub fn runge_kutta(
     differential_equation_system: fn(&mut Vec<Atom>,&Vec<Atom>,f64,f64),

@@ -1,5 +1,4 @@
-use crate::data_structure::trivector;
-use crate::data_structure::trivector::Trivector;
+use super::super::super::data_structure::trivector::Trivector;
 
 use super::Lattice;
 
@@ -48,7 +47,7 @@ impl Lattice for FCC {
                 y: y as f64 + offset.y,
                 z: z as f64 + offset.z,
             } * (*box_length) / (atoms_per_row as f64);
-            let velocity = trivector::random_initialization();
+            let velocity = Trivector::random_initialization();
     
             atoms.push(
                 Atom {

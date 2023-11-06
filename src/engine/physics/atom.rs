@@ -1,4 +1,4 @@
-use crate::data_structure::trivector::Trivector;
+use super::super::data_structure::trivector::Trivector;
 use serde::{Serialize, Deserialize};
 
 use std::ops::Add;

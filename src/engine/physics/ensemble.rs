@@ -3,14 +3,14 @@ use std::io::Write;
 
 use serde::{Serialize, Deserialize};
 
-use crate::data_structure::trivector::Trivector;
-use crate::physics::atom::Atom;
-use super::atom;
+use super::super::data_structure::trivector::Trivector;
+
+use super::atom::Atom;
 use super::lattice;
 
 #[derive(Serialize, Deserialize)]
 pub struct Ensemble {
-    pub atoms: Vec::<atom::Atom>,
+    pub atoms: Vec::<Atom>,
     pub box_length: f64,
     pub number_of_atoms: u64, 
 
@@ -75,30 +75,25 @@ impl Ensemble {
 
     pub fn save(
         &self,
-        directory: &std::path::PathBuf,
-    ) -> std::io::Result<()> {
-
-        let _ = create_dir("result");
-        let filename = "result/two.csv";
-    
-    
+        filename: &std::path::PathBuf,
+    ) -> std::io::Result<()> {    
             
-        let (mut file, exists) = match OpenOptions::new().read(true).open(&filename) {
+        let (mut file, exists) = match OpenOptions::new().read(true).open(filename) {
             Ok(_) => {
-                let file = OpenOptions::new().append(true).open(&filename).unwrap();
+                let file = OpenOptions::new().append(true).open(filename).unwrap();
                 (file, true)
             },
             Err(_) => {
-                let file = File::create(&filename).unwrap();
+                let file = File::create(filename).unwrap();
                 (file,false)
             },
         };
     
-        write!(
+        return write!(
             file,
             "{}",
             self.to_csv(!exists)
-        )
+        );
     }
 
     pub fn to_csv(&self,preamble: bool) -> String {

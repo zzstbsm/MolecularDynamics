@@ -1,4 +1,4 @@
-use crate::physics::atom::Atom;
+use super::super::physics::atom::Atom;
 
 pub fn verlet(
     differential_equation_system: fn(&mut Vec<Atom>,&Vec<Atom>,f64,f64),

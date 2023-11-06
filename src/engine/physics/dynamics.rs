@@ -1,5 +1,5 @@
 use super::atom::Atom;
-use crate::data_structure::trivector::Trivector;
+use super::super::data_structure::trivector::Trivector;
 
 pub fn dynamics(
     state_derivative: &mut Vec<Atom>, 
