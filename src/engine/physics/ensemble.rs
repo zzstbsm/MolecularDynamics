@@ -33,6 +33,7 @@ impl Clone for Ensemble {
 
 impl Ensemble {
     
+    /// Create new ensemble
     pub fn new(
         number_of_atoms: u64,
         box_length: f64,
