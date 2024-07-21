@@ -1,5 +1,6 @@
 use clap::Parser;
-use engine::physics::ensemble::Ensemble;
+use engine::integrators::{verlet::Verlet,runge_kutta::RungeKutta};
+
 mod cli;
 use crate::cli::Cli;
 
@@ -7,17 +8,18 @@ mod engine;
 use crate::engine::data_structure;
 use crate::engine::integrators;
 use crate::engine::io;
+use crate::engine::integrators::Integrator;
 use crate::engine::physics;
-use crate::engine::physics::dynamics::dynamics as dynamics;
-
-use engine::physics::lattice as lattice;
+use crate::engine::physics::dynamics::dynamics;
+use crate::engine::physics::ensemble::Ensemble;
+use crate::engine::physics::lattice;
 
 
 fn main() {
 
     // Define run parameters
     let mut ensemble: Ensemble;
-    let chosen_integrator: integrators::IntegratorFnType;
+    let chosen_integrator: &dyn Integrator;
 
     let _args = Cli::parse();
     
@@ -32,8 +34,8 @@ fn main() {
         } => {
             
             chosen_integrator = match set_integrator {
-                integrators::SupportedIntegrator::Verlet => integrators::verlet::verlet,
-                integrators::SupportedIntegrator::RungeKutta => integrators::runge_kutta::runge_kutta,
+                integrators::SupportedIntegrator::Verlet => &Verlet {},
+                integrators::SupportedIntegrator::RungeKutta => &RungeKutta {},
             };
 
             ensemble = physics::ensemble::Ensemble::new(
@@ -75,7 +77,7 @@ fn main() {
             let _ = io::write(&ensemble);
         }
 
-        chosen_integrator(
+        chosen_integrator.dynamics(
             dynamics, 
             &mut ensemble.atoms, 
             ensemble.t, 

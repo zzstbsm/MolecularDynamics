@@ -1,4 +1,4 @@
-use super::physics::atom::Atom;
+use super::physics::{atom::Atom, dynamics::DynamicsType};
 
 pub mod verlet;
 pub mod runge_kutta;
@@ -9,10 +9,14 @@ pub enum SupportedIntegrator {
     RungeKutta,
 }
 
-pub type IntegratorFnType = fn(
-    differential_equation_system: fn(&mut Vec<Atom>,&Vec<Atom>,f64,f64),
-    atoms: &mut Vec<Atom>,
-    t: f64,
-    dt: f64,
-    box_length: f64,
-);
+pub trait Integrator {
+    fn dynamics(
+        &self,
+        differential_equation_system: DynamicsType,
+        atoms: &mut Vec<Atom>,
+        t: f64,
+        dt: f64,
+        box_length: f64,
+    );
+}
+

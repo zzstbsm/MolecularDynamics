@@ -1,6 +1,8 @@
 use super::atom::Atom;
 use crate::data_structure::trivector::Trivector;
 
+pub type DynamicsType =  fn(&mut Vec<Atom>,&Vec<Atom>,f64,f64);
+
 pub fn dynamics(
     state_derivative: &mut Vec<Atom>, 
     initial_state: &Vec<Atom>, 
