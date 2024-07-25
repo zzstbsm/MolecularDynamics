@@ -41,7 +41,7 @@ fn compute_force(state: &Vec::<Atom>,box_length: f64) -> Vec::<Trivector> {
             );
             
             force[index_atom_1] += force_one_atom;
-            force[index_atom_2] += force_one_atom;
+            force[index_atom_2] -= force_one_atom;
         }
     }
     return force;
@@ -52,17 +52,12 @@ static _EPSILON: f64 = 1_f64;
 
 fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_length: f64) -> Trivector {
 
-    let direction = Trivector::vec_distance(position_1, position_2,box_length);
+    let direction = Trivector::vec_distance(position_1, position_2, box_length);
     
     let distance = Trivector::distance_from_vec_distance(&direction);
     let force_minimum_over_distance = _SIGMA / distance;
 
-    if distance < 0.5 {
-        println!("Particles too close");
-        println!("{:?}",position_1);
-        println!("{:?}",position_2);
-    }
-    let multiply_factor = 4_f64 * (
+    let multiply_factor = - 4_f64 * (
         (
             f64::powf(force_minimum_over_distance,12_f64) * 12_f64 
             - f64::powf(force_minimum_over_distance,6_f64) * 6_f64

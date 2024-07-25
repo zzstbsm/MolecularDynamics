@@ -65,7 +65,7 @@ fn main() {
             counter = 0;
             
             println!(
-                "{} - {} - {} - {} - {}", 
+                "{} | {} | {} | {} | {}", 
                 ensemble.t, 
                 ensemble.atoms[0].position.x, 
                 ensemble.atoms[1].position.x, 
