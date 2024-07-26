@@ -1,5 +1,7 @@
 use super::Ensemble;
 
+/// Compute the periodic conditions of the ensemble
+/// The atoms outside the box after a step are being reput into the box
 pub fn periodic_conditions(ensemble: &mut Ensemble) {
 
     for index in 0..ensemble.atoms.len() {

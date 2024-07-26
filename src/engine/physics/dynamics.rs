@@ -3,6 +3,7 @@ use crate::data_structure::trivector::Trivector;
 
 pub type DynamicsType =  fn(&mut Vec<Atom>,&Vec<Atom>,f64,f64);
 
+/// System of differential equations that describe the dynamics of the ensemble
 pub fn dynamics(
     state_derivative: &mut Vec<Atom>, 
     initial_state: &Vec<Atom>, 
@@ -26,6 +27,7 @@ pub fn dynamics(
 
 }
 
+/// Compute the force between the atoms of the ensemble
 fn compute_force(state: &Vec::<Atom>,box_length: f64) -> Vec::<Trivector> {
 
     let number_of_atoms = state.len();
@@ -50,6 +52,7 @@ fn compute_force(state: &Vec::<Atom>,box_length: f64) -> Vec::<Trivector> {
 static _SIGMA: f64 = 1_f64;
 static _EPSILON: f64 = 1_f64;
 
+/// Compute the force between two atoms using the Lennard Jones potential
 fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_length: f64) -> Trivector {
 
     let direction = Trivector::vec_distance(position_1, position_2, box_length);

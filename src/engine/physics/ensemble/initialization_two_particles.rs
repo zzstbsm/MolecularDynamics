@@ -3,6 +3,8 @@ use crate::data_structure::trivector::Trivector;
 use super::Ensemble;
 use super::super::atom::Atom;
 
+/// Initialize the ensemble with two atoms aligned with opposite velocity.
+/// Only for dynamics test purposes
 pub fn initialization_two_atoms(
     number_of_atoms: u64,
     box_length: f64,
