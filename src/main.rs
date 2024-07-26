@@ -58,35 +58,23 @@ fn main() {
     let _ = io::write(&ensemble);
     println!("Ensemble saved in file!");
 
-    let mut counter = 0_u64;
     while ensemble.t < 1e3 {
-
-        if counter > 1000 {
-            counter = 0;
-            
-            println!(
-                "{} | {} | {} | {} | {}", 
-                ensemble.t, 
-                ensemble.atoms[0].position.x, 
-                ensemble.atoms[1].position.x, 
-                ensemble.atoms[0].velocity.x, 
-                ensemble.atoms[1].velocity.x, 
-            );
-
-            // TODO: remove this after debugged the force
-            let _ = io::write(&ensemble);
-        }
-
-        chosen_integrator.dynamics(
-            dynamics, 
-            &mut ensemble.atoms, 
-            ensemble.t, 
-            ensemble.dt,
-            ensemble.box_length,
+        
+        ensemble.run_step(
+            chosen_integrator,
+            dynamics,
+            1000
         );
-        physics::ensemble::periodic_conditions(&mut ensemble);
-        ensemble.t += ensemble.dt;
-        counter += 1;
+        let properties = ensemble.get_properties();
+        println!(
+            "{} | {} | {} | {} | {} | {}",
+            ensemble.t,
+            properties.total_energy,
+            properties.kinetic_energy,
+            properties.potential_energy,
+            properties.pressure,
+            properties.real_temperature,
+        );
 
     }
 }

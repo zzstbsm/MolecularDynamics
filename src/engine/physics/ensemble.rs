@@ -1,8 +1,16 @@
+mod initialization_two_particles;
+mod macroscopic_properties;
+mod periodic_conditions;
+
 use serde::{Serialize, Deserialize};
 
-use crate::data_structure::trivector::Trivector;
-use crate::physics::atom::Atom;
-use super::atom;
+use crate::engine::integrators::Integrator;
+
+use self::macroscopic_properties::Properties;
+use self::initialization_two_particles::initialization_two_atoms;
+use self::periodic_conditions::periodic_conditions;
+use super::{atom, dynamics};
+use super::atom::Atom;
 use super::lattice;
 use super::lattice::LatticeType;
 
@@ -72,6 +80,7 @@ impl Ensemble {
         }
     }
 
+    /// Write the ensemble into a csv
     pub fn to_csv(&self,preamble: bool) -> String {
 
         let mut to_csv_str = String::new();
@@ -102,86 +111,48 @@ impl Ensemble {
         return to_csv_str;
     }
 
-}
-
-fn initialization_two_atoms(
-    number_of_atoms: u64,
-    box_length: f64,
-    t: f64,
-    dt: f64,
-    target_temperature: f64
-) -> Ensemble {
-
-    let mut atoms: Vec<Atom> = Vec::<Atom>::with_capacity(number_of_atoms as usize);
-
-    let velocity_1 = Trivector {
-        x: 0.5,
-        y: 0.,
-        z: 0.,
-    };
-    let position_1 = Trivector {
-        x: 0.25,
-        y: 0.,
-        z: 0.,
-    } * box_length;
-
-    let velocity_2 = Trivector {
-        x: -0.5,
-        y: 0.,
-        z: 0.,
-    };
-    let position_2 = Trivector {
-        x: 0.75,
-        y: 0.,
-        z: 0.,
-    } * box_length;
-
-    atoms.push(
-        Atom { 
-            position: position_1,
-            velocity: velocity_1,
+    /// Run the simulation for the number of steps indicated in steps_to_do.
+    /// Use the integrator chosen_integrator with the dynamics indicated in dynamics (that would be
+    /// a system of differential equations)
+    pub fn run_step(
+        &mut self,
+        chosen_integrator: & dyn Integrator,
+        dynamics: dynamics::DynamicsType,
+        steps_to_do: u64
+    ) {
+        for _i in 0..steps_to_do {
+            chosen_integrator.dynamics(
+                dynamics, 
+                &mut self.atoms, 
+                self.t, 
+                self.dt,
+                self.box_length,
+            );
+            periodic_conditions(self);
+            self.t += self.dt;
         }
-    );
-    atoms.push(
-        Atom { 
-            position: position_2,
-            velocity: velocity_2,
-        }
-    );
-
-    Ensemble {
-        atoms,
-        box_length,
-        number_of_atoms,
-        t,
-        dt,
-        target_temperature
     }
-}
 
-pub fn periodic_conditions(ensemble: &mut Ensemble) {
+    /// Computes the properties of pressure, temperature, total energy, kinetic energy and
+    /// potential energy of the ensemble
+    pub fn get_properties(&self) -> Properties {
+        
+        let mut pressure = 0_f64;
+        let mut real_temperature = 0_f64;
+        let mut total_energy = 0_f64;
+        let mut kinetic_energy = 0_f64;
+        let mut potential_energy = 0_f64;
 
-    for index in 0..ensemble.atoms.len() {
-        let position = &mut ensemble.atoms[index].position;
+        // TODO: to implement
 
-        if position.x > ensemble.box_length {
-            position.x -= ensemble.box_length;
-        } else if position.x < 0. {
-            position.x += ensemble.box_length;
+        return Properties { 
+            pressure: pressure,
+            real_temperature: real_temperature,
+            total_energy: total_energy,
+            kinetic_energy: kinetic_energy,
+            potential_energy: potential_energy,
         }
-
-        if position.y > ensemble.box_length {
-            position.y -= ensemble.box_length;
-        } else if position.y < 0. {
-            position.y += ensemble.box_length;
-        }
-
-        if position.z > ensemble.box_length {
-            position.z -= ensemble.box_length;
-        } else if position.z < 0. {
-            position.z += ensemble.box_length;
-        }
-
     }
 
 }
+
