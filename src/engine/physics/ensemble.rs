@@ -4,19 +4,21 @@ mod periodic_conditions;
 
 use serde::{Serialize, Deserialize};
 
+use crate::engine::data_structure::trivector::Trivector;
 use crate::engine::integrators::Integrator;
 
 use self::macroscopic_properties::Properties;
 use self::initialization_two_particles::initialization_two_atoms;
 use self::periodic_conditions::periodic_conditions;
-use super::{atom, dynamics};
+use super::dynamics::static_parameters::_STATIC_PARAMETERS;
+use super::dynamics::{self, lennard_jones_force, lennard_jones_potential};
 use super::atom::Atom;
 use super::lattice;
 use super::lattice::LatticeType;
 
 #[derive(Serialize, Deserialize)]
 pub struct Ensemble {
-    pub atoms: Vec::<atom::Atom>,
+    pub atoms: Vec::<Atom>,
     pub box_length: f64,
     pub number_of_atoms: u64, 
 
@@ -137,20 +139,68 @@ impl Ensemble {
     /// potential energy of the ensemble
     pub fn get_properties(&self) -> Properties {
         
-        let mut pressure = 0_f64;
-        let mut real_temperature = 0_f64;
-        let mut total_energy = 0_f64;
-        let mut kinetic_energy = 0_f64;
-        let mut potential_energy = 0_f64;
+        let mut pressure: f64;
+        let real_temperature: f64;
+        let total_energy: f64;
+        let mut kinetic_energy: f64;
+        let mut potential_energy: f64;
 
         // TODO: to implement
 
+        // Compute kinetic energy
+        kinetic_energy = 0_f64;
+        for i in 0..self.number_of_atoms as usize {
+            let velocity: Trivector = self.atoms[i].velocity;
+            kinetic_energy = Trivector::dot_product(&velocity,&velocity);
+        }
+        kinetic_energy *= _STATIC_PARAMETERS.mass / 2_f64;
+
+        // Compute real_temperature
+        real_temperature = 2_f64 * kinetic_energy / (3_f64 * self.number_of_atoms as f64);
+
+        // Compute potential energy
+        potential_energy = 0_f64;
+        for index_atom_1 in 0..(self.number_of_atoms-1) as usize {
+            for index_atom_2 in (index_atom_1+1)..self.number_of_atoms as usize {
+                
+                potential_energy += lennard_jones_potential(
+                    &self.atoms[index_atom_1].position, 
+                    &self.atoms[index_atom_2].position,
+                    self.box_length,
+                );
+            }
+        }
+
+        // Compute pressure
+        pressure = 0_f64;
+        for index_atom_1 in 0..(self.number_of_atoms-1) as usize {
+            for index_atom_2 in (index_atom_1+1)..self.number_of_atoms as usize {
+                
+                let direction: Trivector = Trivector::vec_distance(
+                    &self.atoms[index_atom_1].position, 
+                    &self.atoms[index_atom_2].position,
+                    self.box_length,
+                );
+
+                let force_one_atom = lennard_jones_force(
+                    &self.atoms[index_atom_1].position, 
+                    &self.atoms[index_atom_2].position,
+                    self.box_length,
+                );
+                pressure += Trivector::dot_product(&force_one_atom, &direction)
+            }
+        }
+        pressure = (pressure + 2_f64 * real_temperature) / 3_f64;
+
+        // Compute total energy
+        total_energy = kinetic_energy + potential_energy;
+
         return Properties { 
-            pressure: pressure,
-            real_temperature: real_temperature,
-            total_energy: total_energy,
-            kinetic_energy: kinetic_energy,
-            potential_energy: potential_energy,
+            pressure,
+            real_temperature,
+            total_energy,
+            kinetic_energy,
+            potential_energy,
         }
     }
 

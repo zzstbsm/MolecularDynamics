@@ -1,3 +1,7 @@
+pub mod static_parameters;
+
+use self::static_parameters::_STATIC_PARAMETERS;
+
 use super::atom::Atom;
 use crate::data_structure::trivector::Trivector;
 
@@ -49,18 +53,15 @@ fn compute_force(state: &Vec::<Atom>,box_length: f64) -> Vec::<Trivector> {
     return force;
 }
 
-static _SIGMA: f64 = 1_f64;
-static _EPSILON: f64 = 1_f64;
-
 /// Compute the force between two atoms using the Lennard Jones potential
-fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_length: f64) -> Trivector {
+pub fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_length: f64) -> Trivector {
 
     let direction = Trivector::vec_distance(position_1, position_2, box_length);
     
     let distance = Trivector::distance_from_vec_distance(&direction);
-    let force_minimum_over_distance = _SIGMA / distance;
+    let force_minimum_over_distance = _STATIC_PARAMETERS.sigma / distance;
 
-    let multiply_factor = - 4_f64 * (
+    let multiply_factor = - 4_f64 * _STATIC_PARAMETERS.epsilon * (
         (
             f64::powf(force_minimum_over_distance,12_f64) * 12_f64 
             - f64::powf(force_minimum_over_distance,6_f64) * 6_f64
@@ -68,4 +69,22 @@ fn lennard_jones_force(position_1: &Trivector, position_2: &Trivector, box_lengt
     );
 
     return direction * multiply_factor;
+}
+
+/// Compute the Lennard Jones potential
+pub fn lennard_jones_potential(position_1: &Trivector, position_2: &Trivector, box_length: f64) -> f64 {
+
+    let distance: f64 = Trivector::distance(position_1, position_2, box_length);
+    let force_minimum_over_distance = _STATIC_PARAMETERS.sigma / distance;
+
+    return 4_f64 * _STATIC_PARAMETERS.epsilon * (
+        (
+            f64::powf(force_minimum_over_distance,12_f64) 
+            - f64::powf(force_minimum_over_distance,6_f64)
+            - (
+                f64::powf(_STATIC_PARAMETERS.force_cutoff,12_f64) 
+                - f64::powf(_STATIC_PARAMETERS.force_cutoff,6_f64)
+            )
+        ) / f64::powf(distance,2_f64)
+    );
 }

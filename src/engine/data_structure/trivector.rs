@@ -178,7 +178,6 @@ impl Trivector {
         vector_1.x * vector_2.x + vector_1.y * vector_2.y + vector_1.z * vector_2.z
     }
 
-    #[allow(dead_code)]
     pub fn distance(vector_1: &Trivector, vector_2: &Trivector, box_length: f64) -> f64 {
     
         let distance_vector = Trivector::vec_distance(vector_1, vector_2,box_length);
