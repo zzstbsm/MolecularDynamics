@@ -16,7 +16,7 @@ pub trait Integrator {
         atoms: &mut Vec<Atom>,
         t: f64,
         dt: f64,
-        box_length: f64,
+        box_length: &f64,
     );
 }
 

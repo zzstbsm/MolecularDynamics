@@ -1,6 +1,8 @@
 mod initialization_two_particles;
 mod macroscopic_properties;
+mod normalize_velocity;
 mod periodic_conditions;
+mod set_temperature;
 
 use serde::{Serialize, Deserialize};
 
@@ -9,7 +11,9 @@ use crate::engine::integrators::Integrator;
 
 use self::macroscopic_properties::Properties;
 use self::initialization_two_particles::initialization_two_atoms;
+use self::normalize_velocity::normalize_velocity;
 use self::periodic_conditions::periodic_conditions;
+use self::set_temperature::set_temperature;
 use super::dynamics::static_parameters::_STATIC_PARAMETERS;
 use super::dynamics::{self, lennard_jones_force, lennard_jones_potential};
 use super::atom::Atom;
@@ -71,6 +75,8 @@ impl Ensemble {
             &box_length,
             lattice_type,
         );
+        
+        set_temperature(&mut atoms,target_temperature);
 
         Ensemble {
             atoms,
@@ -118,7 +124,7 @@ impl Ensemble {
     /// a system of differential equations)
     pub fn run_step(
         &mut self,
-        chosen_integrator: & dyn Integrator,
+        chosen_integrator: &dyn Integrator,
         dynamics: dynamics::DynamicsType,
         steps_to_do: u64
     ) {
@@ -128,9 +134,10 @@ impl Ensemble {
                 &mut self.atoms, 
                 self.t, 
                 self.dt,
-                self.box_length,
+                &self.box_length,
             );
             periodic_conditions(self);
+            normalize_velocity(&mut self.atoms);
             self.t += self.dt;
         }
     }
@@ -151,7 +158,7 @@ impl Ensemble {
         kinetic_energy = 0_f64;
         for i in 0..self.number_of_atoms as usize {
             let velocity: Trivector = self.atoms[i].velocity;
-            kinetic_energy = Trivector::dot_product(&velocity,&velocity);
+            kinetic_energy += Trivector::dot_product(&velocity,&velocity);
         }
         kinetic_energy *= _STATIC_PARAMETERS.mass / 2_f64;
 
@@ -166,7 +173,7 @@ impl Ensemble {
                 potential_energy += lennard_jones_potential(
                     &self.atoms[index_atom_1].position, 
                     &self.atoms[index_atom_2].position,
-                    self.box_length,
+                    &self.box_length,
                 );
             }
         }
@@ -179,13 +186,13 @@ impl Ensemble {
                 let direction: Trivector = Trivector::vec_distance(
                     &self.atoms[index_atom_1].position, 
                     &self.atoms[index_atom_2].position,
-                    self.box_length,
+                    &self.box_length,
                 );
 
                 let force_one_atom = lennard_jones_force(
                     &self.atoms[index_atom_1].position, 
                     &self.atoms[index_atom_2].position,
-                    self.box_length,
+                    &self.box_length,
                 );
                 pressure += Trivector::dot_product(&force_one_atom, &direction)
             }

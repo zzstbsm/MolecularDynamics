@@ -13,7 +13,7 @@ impl Integrator for RungeKutta {
             atoms: &mut Vec<Atom>,
             t: f64,
             dt: f64,
-            box_length: f64,
+            box_length: &f64,
         ) {
 
         const NUMBER_OF_NODES: usize = 4;

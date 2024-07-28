@@ -25,7 +25,7 @@ fn main() {
     
     match _args.run_type {
         cli::run_type::RunType::New { 
-            name: _, 
+            name: _, // TODO implement run_name when saving
             n_atoms: set_atoms, 
             integrator: set_integrator, 
             boxlength: set_boxlength,

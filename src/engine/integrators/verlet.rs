@@ -10,7 +10,7 @@ impl Integrator for Verlet {
             atoms: &mut Vec<Atom>,
             t: f64,
             dt: f64,
-            box_length: f64,
+            box_length: &f64,
     ) {
         // Definition and initialization of k
         let mut k1: Vec<Atom> = Atom::initialize(atoms.len()).clone();
