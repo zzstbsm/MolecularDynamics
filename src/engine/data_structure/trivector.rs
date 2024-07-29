@@ -1,4 +1,6 @@
 use std::ops::Add;
+use std::ops::DivAssign;
+use std::ops::MulAssign;
 use std::ops::Sub;
 use std::ops::Mul;
 use std::ops::Div;
@@ -109,6 +111,13 @@ impl Mul<f64> for Trivector {
         }
     }
 }
+impl MulAssign<f64> for Trivector {
+    fn mul_assign(&mut self, rhs: f64) {
+        self.x *= rhs;
+        self.y *= rhs;
+        self.z *= rhs;
+    }
+}
 impl Div<f64> for Trivector {
     type Output = Trivector;
     fn div(self, rhs: f64) -> Trivector {
@@ -117,6 +126,13 @@ impl Div<f64> for Trivector {
             y: self.y / rhs,
             z: self.z / rhs,
         }
+    }
+}
+impl DivAssign<f64> for Trivector {
+    fn div_assign(&mut self, rhs: f64) {
+        self.x /= rhs;
+        self.y /= rhs;
+        self.z /= rhs;
     }
 }
 impl Neg for Trivector {
@@ -151,22 +167,22 @@ impl Trivector {
         } 
     }
 
-    pub fn vec_distance(vector_1: &Trivector, vector_2: &Trivector, box_length: f64) -> Trivector {
+    pub fn vec_distance(vector_1: &Trivector, vector_2: &Trivector, box_length: &f64) -> Trivector {
         let mut distance = *vector_2 - *vector_1;
 
-        if distance.x > box_length/2. {
+        if distance.x >= box_length/2. {
             distance.x -= box_length;
         } else if distance.x < -box_length/2. {
             distance.x += box_length;
         }
 
-        if distance.y > box_length/2. {
+        if distance.y >= box_length/2. {
             distance.y -= box_length;
         } else if distance.y < -box_length/2. {
             distance.y += box_length;
         }
 
-        if distance.z > box_length/2. {
+        if distance.z >= box_length/2. {
             distance.z -= box_length;
         } else if distance.z < -box_length/2. {
             distance.z += box_length;
@@ -178,8 +194,7 @@ impl Trivector {
         vector_1.x * vector_2.x + vector_1.y * vector_2.y + vector_1.z * vector_2.z
     }
 
-    #[allow(dead_code)]
-    pub fn distance(vector_1: &Trivector, vector_2: &Trivector, box_length: f64) -> f64 {
+    pub fn distance(vector_1: &Trivector, vector_2: &Trivector, box_length: &f64) -> f64 {
     
         let distance_vector = Trivector::vec_distance(vector_1, vector_2,box_length);
         
@@ -188,6 +203,17 @@ impl Trivector {
 
     pub fn distance_from_vec_distance(distance_vector: &Trivector) -> f64 {
         Trivector::dot_product(distance_vector,distance_vector).sqrt()
+    }
+
+    /// If the atoms cannot be contained in a cube of cutoff length, return true
+    pub fn if_skip_distance_computation(vector_1: &Trivector, vector_2: &Trivector, box_length: &f64, cutoff: f64) -> bool{
+
+        let distance_vec = Self::vec_distance(vector_1, vector_2, box_length);
+
+        return if distance_vec.x > cutoff || distance_vec.x < -cutoff { true }
+        else if distance_vec.y > cutoff || distance_vec.y < -cutoff { true }
+        else if distance_vec.z > cutoff || distance_vec.z < -cutoff { true }
+        else { false };
     }
 
 }

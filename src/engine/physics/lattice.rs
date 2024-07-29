@@ -49,5 +49,5 @@ pub fn lattice_create(
     };
 
     *atoms = lattice.as_ref().create(number_of_atoms, box_length);
-
+    
 }
