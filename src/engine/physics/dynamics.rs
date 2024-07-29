@@ -20,13 +20,8 @@ pub fn dynamics(
 
     for index_atom in 0..number_of_atoms {
 
-        state_derivative[index_atom].position.x = initial_state[index_atom].velocity.x;
-        state_derivative[index_atom].position.y = initial_state[index_atom].velocity.y;
-        state_derivative[index_atom].position.z = initial_state[index_atom].velocity.z;
-
-        state_derivative[index_atom].velocity.x = force[index_atom].x;
-        state_derivative[index_atom].velocity.y = force[index_atom].y;
-        state_derivative[index_atom].velocity.z = force[index_atom].z;
+        state_derivative[index_atom].position = initial_state[index_atom].velocity;
+        state_derivative[index_atom].velocity = force[index_atom];
     }
 
 }

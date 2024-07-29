@@ -76,6 +76,7 @@ impl Ensemble {
             lattice_type,
         );
         
+        normalize_velocity(&mut atoms);
         set_temperature(&mut atoms,target_temperature);
 
         Ensemble {
@@ -149,21 +150,19 @@ impl Ensemble {
         let mut pressure: f64;
         let real_temperature: f64;
         let total_energy: f64;
-        let mut kinetic_energy: f64;
+        let kinetic_energy: f64;
         let mut potential_energy: f64;
 
-        // TODO: to implement
-
         // Compute kinetic energy
-        kinetic_energy = 0_f64;
+        let mut velocity_squared = 0_f64;
         for i in 0..self.number_of_atoms as usize {
             let velocity: Trivector = self.atoms[i].velocity;
-            kinetic_energy += Trivector::dot_product(&velocity,&velocity);
+            velocity_squared += Trivector::dot_product(&velocity,&velocity);
         }
-        kinetic_energy *= _STATIC_PARAMETERS.mass / 2_f64;
+        kinetic_energy = velocity_squared * _STATIC_PARAMETERS.mass / 2_f64;
 
         // Compute real_temperature
-        real_temperature = 2_f64 * kinetic_energy / (3_f64 * self.number_of_atoms as f64);
+        real_temperature = velocity_squared / (3_f64 * self.number_of_atoms as f64);
 
         // Compute potential energy
         potential_energy = 0_f64;
