@@ -5,7 +5,7 @@ use run_type::RunType;
 
 #[derive(Parser)]
 #[command(name = "MolecularDynamics by zzstbsm")]
-#[command(version = "0.0.1")]
+#[command(version = "0.0.2")]
 #[command(about)]
 #[command(long_about = None)]
 #[command(next_line_help = true)]
