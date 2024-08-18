@@ -7,13 +7,13 @@ use crate::cli::Cli;
 mod engine;
 use crate::engine::data_structure;
 use crate::engine::integrators;
-use crate::engine::io;
 use crate::engine::integrators::Integrator;
 use crate::engine::physics;
 use crate::engine::physics::dynamics::dynamics;
 use crate::engine::physics::ensemble::Ensemble;
 use crate::engine::physics::lattice;
 
+mod io;
 
 fn main() {
 
@@ -27,7 +27,7 @@ fn main() {
     
     
     let _ = io::write(&ensemble);
-    println!("Ensemble saved in file!");
+    println!("Ensemble saved in file!\n");
 
     while ensemble.t < 1e3 {
         

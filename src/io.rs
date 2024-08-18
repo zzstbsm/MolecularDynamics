@@ -8,8 +8,6 @@ pub fn write(ensemble: &Ensemble) -> std::io::Result<()>{
     let _ = create_dir("result");
     let filename = "result/two.csv";
 
-
-        
     let (mut file, exists) = match OpenOptions::new().read(true).open(&filename) {
         Ok(_) => {
             let file = OpenOptions::new().append(true).open(&filename).unwrap();
@@ -20,6 +18,8 @@ pub fn write(ensemble: &Ensemble) -> std::io::Result<()>{
             (file,false)
         },
     };
+
+    print!("{:?}\n{:?}\n",file,exists);
 
     write!(
         file,
