@@ -14,6 +14,7 @@ use crate::engine::physics::ensemble::Ensemble;
 use crate::engine::physics::lattice;
 
 mod io;
+use crate::io::MDIO;
 
 fn main() {
 
@@ -23,11 +24,14 @@ fn main() {
 
     let _args = Cli::parse();
 
+    let filename = "result/properties.csv";
+
     (ensemble, chosen_integrator) = apply_cli_parameters(_args);
     
-    
-    let _ = io::write(&ensemble);
-    println!("Ensemble saved in file!\n");
+    let properties_preamble = MDIO::get_properties(&ensemble, true);
+    print!("{}",properties_preamble);
+    let properties_string = MDIO::write_properties(filename, &ensemble, true);
+    print!("{}",properties_string);
 
     while ensemble.t < 1e3 {
         
@@ -36,16 +40,9 @@ fn main() {
             dynamics,
             1000
         );
-        let properties = ensemble.get_properties();
-        println!(
-            "{} | {} | {} | {} | {} | {}",
-            ensemble.t,
-            properties.total_energy,
-            properties.kinetic_energy,
-            properties.potential_energy,
-            properties.pressure,
-            properties.real_temperature,
-        );
+        
+        let properties_string = MDIO::write_properties(filename, &ensemble, false);
+        print!("{}",properties_string);
 
     }
 }

@@ -89,37 +89,6 @@ impl Ensemble {
         }
     }
 
-    /// Write the ensemble into a csv
-    pub fn to_csv(&self,preamble: bool) -> String {
-
-        let mut to_csv_str = String::new();
-        
-        if preamble {
-            to_csv_str.push_str(
-                "t,atom,x,y,z,vx,vy,vz\n"
-            );
-        }
-
-        for index in 0..self.atoms.len() {
-            let atom = &self.atoms[index];
-            to_csv_str.push_str(
-                format!(
-                    "{},{},{},{},{},{},{},{}\n",
-                    self.t,
-                    index,
-                    atom.position.x,
-                    atom.position.y,
-                    atom.position.z,
-                    atom.velocity.x,
-                    atom.velocity.y,
-                    atom.velocity.z,
-                ).as_str()
-            );
-        }
-
-        return to_csv_str;
-    }
-
     /// Run the simulation for the number of steps indicated in steps_to_do.
     /// Use the integrator chosen_integrator with the dynamics indicated in dynamics (that would be
     /// a system of differential equations)
