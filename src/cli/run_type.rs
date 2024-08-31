@@ -7,7 +7,9 @@ pub enum RunType {
 
     /// Starts a new run with id `name`
     New {
-        name: Option<String>,
+        #[arg(long="run-name")]
+        /// Set name of the run
+        name: String,
 
         #[arg(long="set-atoms")]
         /// Set number of atoms in the ensemble
@@ -32,8 +34,9 @@ pub enum RunType {
 
     /// Resumes a previous run with id `name`
     Resume {
+        #[arg(long="run-name")]
         /// Insert the name of the run to resume
-        name: Option<String>
+        name: String
     },
 
     // Import {

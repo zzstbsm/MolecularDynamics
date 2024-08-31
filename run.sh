@@ -1,5 +1,7 @@
 #!/bin/sh
 
+RUN_NAME=test
+
 INTEGRATOR="verlet"
 
 ATOMS_NUMBER="200"
@@ -9,6 +11,7 @@ TEMPERATURE="1"
 
 cargo run -r -- \
     new \
+    --run-name $RUN_NAME \
     --set-integrator $INTEGRATOR \
     --set-atoms $ATOMS_NUMBER \
     --set-boxlength $BOXLENGTH \
