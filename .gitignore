@@ -1,5 +1,6 @@
 /target
 .vscode/launch.json
 .vscode/settings.json
+result/
 result/two.csv
 analysis/two_particles.py

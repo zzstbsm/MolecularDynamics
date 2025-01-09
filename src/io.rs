@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, Write};
 
@@ -94,15 +95,16 @@ impl MDIO {
     }
 
     /// Get a lattice saved from a previous run
-    pub fn read_ensemble(run_name: &str) -> Ensemble{
+    pub fn read_ensemble(run_name: &str) -> Result<Ensemble, Box<dyn Error>>{
 
         let filename = FileNamingConvention::get_ensemble_name(run_name);
 
         let file = Self::get_buffer(&filename, false);
         let reader = BufReader::new(file);
 
-        let ensemble: Ensemble = serde_json::from_reader(reader).unwrap();
-        return ensemble;
+        let ensemble = serde_json::from_reader(reader)?;
+
+        return Ok(ensemble);
     }
 
     /// Save the lattice of the run

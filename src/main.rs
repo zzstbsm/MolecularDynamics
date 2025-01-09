@@ -87,20 +87,19 @@ fn apply_cli_parameters(_args: Cli) -> (Ensemble, Box<dyn Integrator>, String) {
 
         },
 
-        cli::run_type::RunType::Resume { name: set_name } => {
-            // TODO implementation
+        cli::run_type::RunType::Resume {
+            name: set_name,
+            integrator: set_integrator
+        } => {
+
             run_name = set_name;
 
-            chosen_integrator = Box::new(Verlet {});
+            chosen_integrator = match set_integrator {
+                integrators::SupportedIntegrator::Verlet => Box::new(Verlet {}),
+                integrators::SupportedIntegrator::RungeKutta => Box::new(RungeKutta {}),
+            };
 
-            ensemble = physics::ensemble::Ensemble::new(
-                2_u64, //200_u64,
-                20_f64,
-                0_f64,
-                0_f64,
-                1_f64,
-                lattice::LatticeType::FCC,
-            );
+            ensemble = MDIO::read_ensemble(&run_name).unwrap();
         },
     }
     

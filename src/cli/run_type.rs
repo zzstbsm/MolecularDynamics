@@ -28,15 +28,20 @@ pub enum RunType {
         temperature: f64,
         
         #[arg(long = "set-integrator")]
-        /// Set the integrator to use.
+        /// Set the integrator to use
         integrator: SupportedIntegrator
     },
 
     /// Resumes a previous run with id `name`
     Resume {
+
         #[arg(long="run-name")]
         /// Insert the name of the run to resume
-        name: String
+        name: String,
+        
+        #[arg(long="set-integrator")]
+        /// Set the integrator to use
+        integrator: SupportedIntegrator
     },
 
     // Import {
