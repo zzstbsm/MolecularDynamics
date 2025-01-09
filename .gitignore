@@ -1,6 +1,6 @@
 /target
 .vscode/launch.json
 .vscode/settings.json
-result/
-result/two.csv
+result/*
+!result/*.gnuplot
 analysis/two_particles.py
