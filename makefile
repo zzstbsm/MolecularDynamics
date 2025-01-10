@@ -1,32 +1,47 @@
-RUN_TEST_NAME=test
-RUN_TEST_INTEGRATOR=verlet
+TEST_NAME=test
+TEST_INTEGRATOR=verlet
 
-RUN_TEST_ATOMS=300
-RUN_TEST_BOXLENGTH=20
-RUN_TEST_STEP=1e-3
-RUN_TEST_TEMPERATURE=1
+TEST_ATOMS=300
+TEST_BOXLENGTH=20
+TEST_STEP=1e-3
+TEST_TEMPERATURE=1
+
+RUN_TEST_NEW=new $\
+	--run-name ${TEST_NAME} $\
+	--set-integrator ${TEST_INTEGRATOR} $\
+	--set-atoms ${TEST_ATOMS} $\
+	--set-boxlength ${TEST_BOXLENGTH} $\
+	--set-step ${TEST_STEP} $\
+	--set-temperature ${TEST_TEMPERATURE} $\
+
+RUN_TEST_RESUME=resume $\
+	--run-name ${TEST_NAME} $\
+	--set-integrator ${TEST_INTEGRATOR}
 
 build:
+	cargo build --release
+
+build-debug:
 	cargo build
 
-new-test:
-	cargo run -r -- new \
-		--run-name ${RUN_TEST_NAME} \
-		--set-integrator ${RUN_TEST_INTEGRATOR} \
-		--set-atoms ${RUN_TEST_ATOMS} \
-		--set-boxlength ${RUN_TEST_BOXLENGTH} \
-		--set-step ${RUN_TEST_STEP} \
-		--set-temperature ${RUN_TEST_TEMPERATURE}
+run-new-test-debug: build-debug
+	time ./target/debug/molecular_dynamics ${RUN_TEST_NEW}
 
-resume-test:
-	cargo run -r -- resume \
-		--run-name ${RUN_TEST_NAME} \
-		--set-integrator ${RUN_TEST_INTEGRATOR}
+run-resume-test-debug: build-debug
+	./target/debug/molecular_dynamics ${RUN_TEST_RESUME}
+
+run-new-test-release: build
+	time ./target/release/molecular_dynamics ${RUN_TEST_NEW}
+
+run-resume-test-release: build
+	./target/release/molecular_dynamics ${RUN_TEST_RESUME}
 
 plot-test:
-	gnuplot -p -e "filename='result/${RUN_TEST_NAME}/properties.csv';" result/energy.gnuplot
-	gnuplot -p -e "filename='result/${RUN_TEST_NAME}/properties.csv';" result/pressure.gnuplot
-	gnuplot -p -e "filename='result/${RUN_TEST_NAME}/properties.csv';" result/temperature.gnuplot
-
+	if [[ -d result/${TEST_NAME} ]]; then
+		gnuplot -p -e "filename='result/${TEST_NAME}/properties.csv';" result/energy.gnuplot
+		gnuplot -p -e "filename='result/${TEST_NAME}/properties.csv';" result/pressure.gnuplot
+		gnuplot -p -e "filename='result/${TEST_NAME}/properties.csv';" result/temperature.gnuplot
+	fi
+	
 clean-test:
-	rm -r result/${RUN_TEST_NAME}
+	rm -r result/${TEST_NAME}
