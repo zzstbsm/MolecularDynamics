@@ -1,6 +1,3 @@
-/target
-.vscode/launch.json
-.vscode/settings.json
 result/*
 !result/*.gnuplot
-analysis/two_particles.py
+/target
