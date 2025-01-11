@@ -6,7 +6,7 @@ TEST_BOXLENGTH=20
 TEST_STEP=1e-3
 TEST_TEMPERATURE=1
 
-RUN_TEST_NEW=new $\
+RUN_TEST_NEW= standalone new $\
 	--run-name ${TEST_NAME} $\
 	--set-integrator ${TEST_INTEGRATOR} $\
 	--set-atoms ${TEST_ATOMS} $\
@@ -14,7 +14,7 @@ RUN_TEST_NEW=new $\
 	--set-step ${TEST_STEP} $\
 	--set-temperature ${TEST_TEMPERATURE} $\
 
-RUN_TEST_RESUME=resume $\
+RUN_TEST_RESUME= standalone resume $\
 	--run-name ${TEST_NAME} $\
 	--set-integrator ${TEST_INTEGRATOR}
 
