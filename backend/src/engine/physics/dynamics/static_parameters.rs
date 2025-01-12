@@ -1,4 +1,3 @@
-
 pub struct StaticParameters {
     pub sigma: f64,
     pub epsilon: f64,

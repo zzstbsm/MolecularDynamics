@@ -1,23 +1,17 @@
 mod fcc;
 mod simple_cubic;
 
+use crate::engine::api::LatticeType;
+
 use super::atom::Atom;
 
-#[allow(dead_code)]
-pub enum LatticeType {
-    FCC,
-    SimpleCubic,
-}
-
 pub trait Lattice {
-
     fn create(
         self: &Self,
         number_of_atoms: &u64,
         box_length: &f64,
     ) -> Vec<Atom>;
 }
-
 
 pub fn lattice_check_position(
     atoms_per_row: &u64, 
@@ -40,7 +34,7 @@ pub fn lattice_create(
     atoms: &mut Vec<Atom>,
     number_of_atoms: &u64,
     box_length: &f64,
-    lattice_type: LatticeType,
+    lattice_type: LatticeType
 ) {
     
     let lattice: Box<dyn Lattice> = match lattice_type {

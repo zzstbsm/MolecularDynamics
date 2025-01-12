@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 
-use super::super::engine::integrators::SupportedIntegrator;
+use crate::engine::api::SupportedIntegrator;
 
 #[derive(Parser)]
 pub struct StandaloneTypeArgs {

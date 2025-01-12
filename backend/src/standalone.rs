@@ -1,33 +1,35 @@
-use crate::{engine::{integrators::Integrator, physics::{dynamics::dynamics, ensemble::Ensemble}}, io::MDIO, run_instance::RunInstance};
+use crate::{engine::api::Engine, run_instance::RunInstance};
 
 pub struct Standalone {
-    pub ensemble: Ensemble,
-    pub chosen_integrator: Box<dyn Integrator>,
+    pub engine: Box<Engine>,
     pub run_name: String,
 }
 
 impl RunInstance for Standalone {
+
     fn start(&mut self){
 
-        MDIO::write_ensemble(&self.run_name, &self.ensemble);
+        let mut t = 0_f64;
+        let t_max = 1e3_f64;
 
-        let properties_preamble = MDIO::get_properties(&self.ensemble, true);
+        self.engine.write_ensemble(&self.run_name);
+
+        let properties_preamble = self.engine.get_properties(true);
         print!("{}",properties_preamble);
-        let properties_string = MDIO::write_properties(&self.run_name, &self.ensemble, true);
+        let properties_string = self.engine.write_properties(&self.run_name,true);
         print!("{}",properties_string);
 
-        while self.ensemble.t < 1e3 {
-            
-            self.ensemble.run_step(
-                &(*self.chosen_integrator),
-                dynamics,
+        while t < t_max {
+        // while self.ensemble.t < 1e3 {
+            self.engine.run(
                 1000
             );
             
-            MDIO::write_ensemble(&self.run_name, &self.ensemble);
-            let properties_string = MDIO::write_properties(&self.run_name, &self.ensemble, false);
+            self.engine.write_ensemble(&self.run_name);
+            let properties_string = self.engine.write_properties(&self.run_name, true);
             print!("{}",properties_string);
-
+            
+            t += self.engine.get_integration_step();
         }
     }
 }

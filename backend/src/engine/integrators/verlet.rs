@@ -1,4 +1,5 @@
-use crate::{engine::physics::dynamics::DynamicsType, physics::atom::Atom};
+use crate::engine::physics::{atom::Atom, dynamics::DynamicsType};
+
 use super::Integrator;
 
 pub struct Verlet {}

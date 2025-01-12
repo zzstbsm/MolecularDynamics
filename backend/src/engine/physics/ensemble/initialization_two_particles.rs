@@ -1,4 +1,4 @@
-use crate::data_structure::trivector::Trivector;
+use crate::engine::data_structure::trivector::Trivector;
 
 use super::Ensemble;
 use super::super::atom::Atom;
@@ -54,8 +54,8 @@ pub fn initialization_two_atoms(
         atoms,
         box_length,
         number_of_atoms,
-        t,
-        dt,
+        time: t,
+        integration_step: dt,
         target_temperature
     }
 }

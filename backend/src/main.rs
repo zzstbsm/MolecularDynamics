@@ -5,11 +5,6 @@ use cli::get_instance_from_cli;
 use crate::cli::Cli;
 
 mod engine;
-use crate::engine::data_structure;
-use crate::engine::physics;
-
-mod io;
-
 mod run_instance;
 
 mod server;

@@ -1,5 +1,4 @@
-use crate::physics::atom;
-use crate::physics::atom::Atom;
+use crate::engine::physics::atom::{sum_atoms_vec, times_scalar_atoms_vec, Atom};
 
 use super::Integrator;
 use super::super::physics::dynamics::DynamicsType;
@@ -33,8 +32,8 @@ impl Integrator for RungeKutta {
     
         for i in 0..NUMBER_OF_NODES {
     
-            atom::times_scalar_atoms_vec(&mut buffer_k,&k[i],dt*nodes[i]);
-            atom::sum_atoms_vec(&mut intermediate_state,&atoms, &buffer_k);
+            times_scalar_atoms_vec(&mut buffer_k,&k[i],dt*nodes[i]);
+            sum_atoms_vec(&mut intermediate_state,&atoms, &buffer_k);
             
             let tt = t + dt*nodes[i];
     
@@ -43,9 +42,9 @@ impl Integrator for RungeKutta {
         
         // Weights part
         for i in 0..NUMBER_OF_NODES {
-            atom::times_scalar_atoms_vec(&mut buffer_k, &k[i+1], weights[i]*dt);
+            times_scalar_atoms_vec(&mut buffer_k, &k[i+1], weights[i]*dt);
             intermediate_state = atoms.clone();
-            atom::sum_atoms_vec(atoms, &intermediate_state, &buffer_k)
+            sum_atoms_vec(atoms, &intermediate_state, &buffer_k)
         }
     }
 }

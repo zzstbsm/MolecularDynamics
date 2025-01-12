@@ -1,8 +1,9 @@
-use crate::data_structure::trivector::Trivector;
 use serde::{Serialize, Deserialize};
 
 use std::ops::Add;
 use std::ops::Mul;
+
+use crate::engine::data_structure::trivector::Trivector;
 
 #[derive(Serialize, Deserialize, Copy)]
 pub struct Atom {

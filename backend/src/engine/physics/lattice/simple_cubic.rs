@@ -1,7 +1,5 @@
-use crate::data_structure::trivector;
-use crate::data_structure::trivector::Trivector;
+use crate::engine::{data_structure::trivector::{random_initialization, Trivector}, physics::atom::Atom};
 
-use super::super::atom::Atom;
 use super::{lattice_check_position, Lattice};
 
 pub struct SimpleCubic {}
@@ -35,7 +33,7 @@ impl Lattice for SimpleCubic {
                 z: z as f64,
             } * (*box_length) / (atoms_per_row as f64);
     
-            let velocity = trivector::random_initialization();
+            let velocity = random_initialization();
     
             atoms.push(
                 Atom {

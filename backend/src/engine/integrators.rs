@@ -3,12 +3,6 @@ use super::physics::{atom::Atom, dynamics::DynamicsType};
 pub mod verlet;
 pub mod runge_kutta;
 
-#[derive(Clone,clap::ValueEnum)]
-pub enum SupportedIntegrator {
-    Verlet,
-    RungeKutta,
-}
-
 pub trait Integrator {
     fn dynamics(
         &self,

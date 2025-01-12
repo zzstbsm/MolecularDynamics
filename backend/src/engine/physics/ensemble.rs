@@ -4,30 +4,25 @@ mod normalize_velocity;
 mod periodic_conditions;
 mod set_temperature;
 
+use initialization_two_particles::initialization_two_atoms;
+use macroscopic_properties::Properties;
+use normalize_velocity::normalize_velocity;
+use periodic_conditions::periodic_conditions;
 use serde::{Serialize, Deserialize};
+use set_temperature::set_temperature;
 
-use crate::engine::data_structure::trivector::Trivector;
-use crate::engine::integrators::Integrator;
+use crate::engine::{api::LatticeType, data_structure::trivector::Trivector, integrators::Integrator};
 
-use self::macroscopic_properties::Properties;
-use self::initialization_two_particles::initialization_two_atoms;
-use self::normalize_velocity::normalize_velocity;
-use self::periodic_conditions::periodic_conditions;
-use self::set_temperature::set_temperature;
-use super::dynamics::static_parameters::_STATIC_PARAMETERS;
-use super::dynamics::{self, lennard_jones_force, lennard_jones_potential};
-use super::atom::Atom;
-use super::lattice;
-use super::lattice::LatticeType;
+use super::{atom::Atom, dynamics::{self, lennard_jones_force, lennard_jones_potential, static_parameters::_STATIC_PARAMETERS}, lattice};
 
 #[derive(Serialize, Deserialize)]
 pub struct Ensemble {
-    pub atoms: Vec::<Atom>,
+    pub atoms: Vec<Atom>,
     pub box_length: f64,
     pub number_of_atoms: u64, 
 
-    pub t: f64,
-    pub dt: f64,
+    pub time: f64,
+    pub integration_step: f64,
 
     pub target_temperature: f64,
 }
@@ -38,8 +33,8 @@ impl Clone for Ensemble {
             atoms: self.atoms.clone(),
             box_length: self.box_length,
             number_of_atoms: self.number_of_atoms,
-            t: self.t,
-            dt: self.dt,
+            time: self.time,
+            integration_step: self.integration_step,
             target_temperature: self.target_temperature,
         }
     }
@@ -83,8 +78,8 @@ impl Ensemble {
             atoms,
             box_length,
             number_of_atoms,
-            t,
-            dt,
+            time: t,
+            integration_step: dt,
             target_temperature
         }
     }
@@ -102,13 +97,13 @@ impl Ensemble {
             chosen_integrator.dynamics(
                 dynamics, 
                 &mut self.atoms, 
-                self.t, 
-                self.dt,
+                self.time, 
+                self.integration_step,
                 &self.box_length,
             );
             periodic_conditions(self);
             normalize_velocity(&mut self.atoms);
-            self.t += self.dt;
+            self.time += self.integration_step;
         }
     }
 

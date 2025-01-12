@@ -1,13 +1,10 @@
-use std::error::Error;
-use std::fs::{File, OpenOptions};
-use std::io::{BufReader, Write};
+use std::{error::Error, fs::{File, OpenOptions}, io::{Write, BufReader}};
 
-use crate::physics::ensemble::Ensemble;
+use crate::engine::physics::ensemble::Ensemble;
 
-/// MolecularDynamics input-output handling
-pub struct MDIO {}
+use super::Engine;
 
-impl MDIO {
+impl Engine {
 
     /// Get the File buffer in order to do IO operations
     /// new == true creates a new file, overwriting the old one if it exists
@@ -39,7 +36,7 @@ impl MDIO {
     }
 
     /// Get the properties of the ensemble. If the preamble is true, return the preamble only
-    pub fn get_properties(ensemble: &Ensemble, preamble: bool) -> String {
+    pub fn get_properties(&self, preamble: bool) -> String {
 
         return match preamble {
             true => {
@@ -54,11 +51,11 @@ impl MDIO {
                 )
             }
             false => {
-                let properties = ensemble.get_properties();
+                let properties = self.ensemble.get_properties();
 
                 format!(
                     "{},{},{},{},{},{}\n",
-                    ensemble.t,
+                    self.ensemble.time,
                     properties.total_energy,
                     properties.kinetic_energy,
                     properties.potential_energy,
@@ -71,11 +68,11 @@ impl MDIO {
 
     /// Write in a file the properties of a file. If the file does not exist, create it and add a
     /// premble
-    pub fn write_properties(run_name: &str, ensemble: &Ensemble, preamble: bool) -> String {
+    pub fn write_properties(&self, run_name: &str, preamble: bool) -> String {
 
         let filename = FileNamingConvention::get_properties_name(run_name);
         
-        let properties_string = Self::get_properties(ensemble, preamble);
+        let properties_string = self.get_properties(preamble);
         let mut file = Self::get_buffer(&filename, preamble);
 
         let _ = write!(
@@ -87,7 +84,7 @@ impl MDIO {
         // If the preamble was true, it wrote only the preamble
         // Write also the first line of properties
         if preamble {
-            return Self::write_properties(&run_name, ensemble, !preamble);
+            return self.write_properties(&run_name, !preamble);
         }
 
         return properties_string;
@@ -108,7 +105,7 @@ impl MDIO {
     }
 
     /// Save the lattice of the run
-    pub fn write_ensemble(run_name: &str, ensemble: &Ensemble) {
+    pub fn write_ensemble(&self, run_name: &str) {
 
         let filename = FileNamingConvention::get_ensemble_name(run_name);
 
@@ -117,7 +114,7 @@ impl MDIO {
         let _ = write!(
             file,
             "{}",
-            serde_json::to_string(&ensemble).unwrap()
+            serde_json::to_string(&self.ensemble).unwrap()
         );
         return;
     }

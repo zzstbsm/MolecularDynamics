@@ -1,9 +1,10 @@
 pub mod static_parameters;
 
+use crate::engine::data_structure::trivector::Trivector;
+
 use self::static_parameters::_STATIC_PARAMETERS;
 
 use super::atom::Atom;
-use crate::data_structure::trivector::Trivector;
 
 pub type DynamicsType =  fn(&mut Vec<Atom>,&Vec<Atom>,f64,&f64);
 

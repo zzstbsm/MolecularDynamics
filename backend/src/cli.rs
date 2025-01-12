@@ -7,7 +7,7 @@ use run_type::RunType;
 use server::ServerTypeArgs;
 use standalone::{StandaloneType, StandaloneTypeArgs};
 
-use crate::{engine::{integrators::{self, runge_kutta::RungeKutta, verlet::Verlet, Integrator}, physics::ensemble::Ensemble}, io::MDIO, run_instance::RunInstance, server::Server, standalone::Standalone};
+use crate::{engine::api::{Engine, LatticeType}, run_instance::RunInstance, server::Server, standalone::Standalone};
 
 #[derive(Parser)]
 #[command(name = "MolecularDynamics by zzstbsm")]
@@ -36,8 +36,7 @@ pub fn get_server_parameters(server_args: ServerTypeArgs) -> Box<dyn RunInstance
 pub fn get_standalone_parameters(standalone_args: StandaloneTypeArgs) -> Box<dyn RunInstance> {
     
     // Define run parameters
-    let ensemble: Ensemble;
-    let chosen_integrator: Box<dyn Integrator>;
+    let engine: Engine;
     let run_name: String;
 
     match standalone_args.sub {
@@ -52,19 +51,16 @@ pub fn get_standalone_parameters(standalone_args: StandaloneTypeArgs) -> Box<dyn
             
             run_name = set_name;
 
-            chosen_integrator = match set_integrator {
-                integrators::SupportedIntegrator::Verlet => Box::new(Verlet {}),
-                integrators::SupportedIntegrator::RungeKutta => Box::new(RungeKutta {}),
-            };
-
-            ensemble = Ensemble::new(
-                set_atoms, //200_u64,
+            engine = Engine::new(
+                set_atoms,
                 set_boxlength,
                 0_f64,
                 set_step,
                 set_temperature,
-                crate::engine::physics::lattice::LatticeType::FCC,
-            );
+                LatticeType::FCC,
+                set_integrator
+            )
+            
         },
         StandaloneType::Resume {
             name: set_name,
@@ -73,19 +69,16 @@ pub fn get_standalone_parameters(standalone_args: StandaloneTypeArgs) -> Box<dyn
 
             run_name = set_name;
 
-            chosen_integrator = match set_integrator {
-                integrators::SupportedIntegrator::Verlet => Box::new(Verlet {}),
-                integrators::SupportedIntegrator::RungeKutta => Box::new(RungeKutta {}),
-            };
-
-            ensemble = MDIO::read_ensemble(&run_name).unwrap();
+            engine = Engine::load(
+                &run_name,
+                set_integrator,
+            )
         },
     }
     
     return Box::new(
         Standalone {
-            ensemble,
-            chosen_integrator,
+            engine: Box::new(engine),
             run_name,
         }
     )
