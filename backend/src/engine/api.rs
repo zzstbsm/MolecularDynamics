@@ -10,13 +10,13 @@ pub struct Engine {
     integrator: Box<dyn Integrator>,
 }
 
-#[allow(dead_code)]
+#[derive(Clone, clap::ValueEnum)]
 pub enum LatticeType {
     FCC,
     SimpleCubic,
 }
 
-#[derive(Clone,clap::ValueEnum)]
+#[derive(Clone, clap::ValueEnum)]
 pub enum SupportedIntegrator {
     Verlet,
     RungeKutta,

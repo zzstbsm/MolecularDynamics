@@ -18,6 +18,8 @@ RUN_TEST_RESUME=standalone resume $\
 	--run-name ${TEST_NAME} $\
 	--set-integrator ${TEST_INTEGRATOR}
 
+RUN_SERVER=server -p 5000
+
 build:
 	cargo build --release
 
@@ -35,6 +37,18 @@ run-new-test-release: build
 
 run-resume-test-release: build
 	./target/release/molecular_dynamics ${RUN_TEST_RESUME}
+
+server-debug: build-debug
+	./target/debug/molecular_dynamics ${RUN_SERVER}
+
+server-release: build
+	./target/release/molecular_dynamics ${RUN_SERVER}
+
+server-watch-client:
+	cargo watch -q -c -w backend/tests/ -x "test -q -- --nocapture"
+
+server-watch-server:
+	cargo watch -q -c -w backend/src/ -x "run -- ${RUN_SERVER}"
 
 plot-test:
 	@if [ -d result/${TEST_NAME} ]; then \
