@@ -8,7 +8,8 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1.0", features = ["full"]}
 # Axum
-axum = "0.6.4"
+axum = "0.8.2"
+axum-macros = "0.5.0"
 tower-http = {version = "0.4", features = ["fs"]}
 # Cli
 clap = {version = "4.0", features = ["derive"]}

@@ -4,7 +4,7 @@ use serde::Deserialize;
 pub fn api_test_route_hello() -> Router {
     Router::new()
         .route("/hello", get(handler_hello))
-        .route("/hello2/:name", get(handler_hello2))
+        .route("/hello2/{name}", get(handler_hello2))
 }
 
 async fn handler_hello(Query(param): Query<HelloParams>) -> Json<Message> {

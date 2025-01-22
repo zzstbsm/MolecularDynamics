@@ -1,9 +1,4 @@
-use std::net::SocketAddr;
-
-use axum::{
-    routing::get_service, Router
-};
-use tower_http::services::ServeDir;
+use axum::{http::StatusCode, response::IntoResponse, Router};
 
 use super::rest_api;
 
@@ -13,21 +8,24 @@ pub async fn server_main(port: u16){
         .merge(rest_api::test_routes::api_test_routes())
         .merge(rest_api::simulation_management::api_simulation_management())
         .merge(rest_api::simulation_results::api_simulation_results())
-        .fallback_service(routes_static());
+        .fallback(fallback_handler);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = format!("127.0.0.1:{port}");
 
-    println!("Server started, listening on {addr}");
-
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .expect("Failed to start server");
+    let listener = tokio::net::TcpListener::bind(&addr).await;
+    
+    match listener {
+        Ok(v) => {
+            axum::serve(v,app).await.unwrap();
+        }
+        Err(e) => {
+            println!("Error {e} on server {addr}");
+        }
+    }
 
 }
 
-// ---- Routes: Hello static files routes
-fn routes_static() -> Router {
-    Router::new().nest_service("/", get_service(ServeDir::new("./")))
+async fn fallback_handler() -> impl IntoResponse {
+    (StatusCode::NOT_FOUND, "Endpoint not present")
 }
 
