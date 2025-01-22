@@ -6,8 +6,8 @@ impl Engine {
     pub fn new(
         number_of_atoms: u64,
         box_length: f64,
-        t: f64,
-        dt: f64,
+        current_time: f64,
+        integration_step: f64,
         target_temperature: f64,
         lattice_type: LatticeType,
         integrator: SupportedIntegrator,
@@ -15,10 +15,10 @@ impl Engine {
 
         let ensemble = Box::new(
             Ensemble::new(
-                number_of_atoms, //200_u64,
+                number_of_atoms,
                 box_length,
-                t,
-                dt,
+                current_time,
+                integration_step,
                 target_temperature,
                 lattice_type,
             )

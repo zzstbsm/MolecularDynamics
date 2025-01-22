@@ -8,8 +8,8 @@ use super::super::atom::Atom;
 pub fn initialization_two_atoms(
     number_of_atoms: u64,
     box_length: f64,
-    t: f64,
-    dt: f64,
+    current_time: f64,
+    integration_step: f64,
     target_temperature: f64
 ) -> Ensemble {
 
@@ -54,8 +54,8 @@ pub fn initialization_two_atoms(
         atoms,
         box_length,
         number_of_atoms,
-        time: t,
-        integration_step: dt,
+        current_time,
+        integration_step,
         target_temperature
     }
 }

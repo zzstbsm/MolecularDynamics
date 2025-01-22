@@ -55,7 +55,7 @@ impl Engine {
 
                 format!(
                     "{},{},{},{},{},{}\n",
-                    self.ensemble.time,
+                    self.ensemble.current_time,
                     properties.total_energy,
                     properties.kinetic_energy,
                     properties.potential_energy,

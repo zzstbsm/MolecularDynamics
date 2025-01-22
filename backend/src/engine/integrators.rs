@@ -8,8 +8,8 @@ pub trait Integrator {
         &self,
         differential_equation_system: DynamicsType,
         atoms: &mut Vec<Atom>,
-        t: f64,
-        dt: f64,
+        current_time: f64,
+        integration_step: f64,
         box_length: &f64,
     );
 }

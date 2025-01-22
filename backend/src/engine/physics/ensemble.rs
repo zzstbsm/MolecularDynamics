@@ -21,7 +21,7 @@ pub struct Ensemble {
     pub box_length: f64,
     pub number_of_atoms: u64, 
 
-    pub time: f64,
+    pub current_time: f64,
     pub integration_step: f64,
 
     pub target_temperature: f64,
@@ -33,7 +33,7 @@ impl Clone for Ensemble {
             atoms: self.atoms.clone(),
             box_length: self.box_length,
             number_of_atoms: self.number_of_atoms,
-            time: self.time,
+            current_time: self.current_time,
             integration_step: self.integration_step,
             target_temperature: self.target_temperature,
         }
@@ -46,8 +46,8 @@ impl Ensemble {
     pub fn new(
         number_of_atoms: u64,
         box_length: f64,
-        t: f64,
-        dt: f64,
+        current_time: f64,
+        integration_step: f64,
         target_temperature: f64,
         lattice_type: LatticeType,
     ) -> Ensemble {
@@ -78,8 +78,8 @@ impl Ensemble {
             atoms,
             box_length,
             number_of_atoms,
-            time: t,
-            integration_step: dt,
+            current_time,
+            integration_step,
             target_temperature
         }
     }
@@ -97,13 +97,13 @@ impl Ensemble {
             chosen_integrator.dynamics(
                 dynamics, 
                 &mut self.atoms, 
-                self.time, 
+                self.current_time, 
                 self.integration_step,
                 &self.box_length,
             );
             periodic_conditions(self);
             normalize_velocity(&mut self.atoms);
-            self.time += self.integration_step;
+            self.current_time += self.integration_step;
         }
     }
 
