@@ -1,6 +1,7 @@
 use axum::{http::StatusCode, response::{IntoResponse, Response}};
+use utoipa::ToSchema;
 
-#[derive(Debug)]
+#[derive(Debug, ToSchema)]
 pub enum EngineError {
     LatticeType,
     Integrator,

@@ -1,6 +1,8 @@
+mod openapi;
 mod rest_api;
-mod server_start;
+mod server_config;
 mod server_error;
+mod server_start;
 
 use crate::run_instance::RunInstance;
 
@@ -10,7 +12,7 @@ pub struct Server {
 
 impl RunInstance for Server {
     fn start(&mut self) {
-        println!("Server started on port {}", self.port);
+        println!("Starting backend server");
         server_start::server_main(self.port);
         return;
     }

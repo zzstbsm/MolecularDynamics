@@ -1,11 +1,12 @@
 use axum::response::IntoResponse;
 use serde::Deserialize;
+use utoipa::ToSchema;
 
 use crate::engine::api::{Engine, LatticeType, SupportedIntegrator};
 
 use super::engine_error::EngineError;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct EnginePayload {
     number_of_atoms: u64,
     box_length: f64,
